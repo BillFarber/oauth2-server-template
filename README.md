@@ -30,6 +30,8 @@ The server will be available at:
 - **OAuth2 Server (Admin)**: http://localhost:4445/admin/clients  
 - **Login/Consent App**: http://localhost:3000
 
+You can skip to the [Usage Examples](#-usage-examples) section to try out the server. 
+
 ## 📋 Features
 
 - ✅ **OAuth 2.0 & OpenID Connect 1.0** compliant
@@ -119,7 +121,7 @@ This script:
 # Test the complete authorization code flow (manual)
 ./examples/test-oauth-flow.sh
 ```
-This requires you to manually copy the authorization code from the browser.
+This requires you to manually copy the authorization code from the browser. **Note:** You need a server running on port 5555 to receive the OAuth callback, or you'll get a "connection refused" error (you can still copy the authorization code from the failed redirect URL).
 
 **Option 3: Client Credentials Flow**
 ```bash
