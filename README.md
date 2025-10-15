@@ -13,11 +13,17 @@ A production-ready OAuth2 server template using **Ory Hydra** that can be easily
 git clone https://github.com/BillFarber/oauth2-server-template.git oauth-server
 cd oauth-server
 
-# Set up and start the server (generates new random secrets)
+# Set up and start the server.
+# Uses fixed secrets that work with the Python app.
+# Use if you plan to test the automatic OAuth flow with the Python callback server. This is good for initially verifying the setup.
+./scripts/setup-with-fixed-secrets.sh`
+
+# Set up and start the server.
+# ⚠️ **Note**: This generates new random secrets each time. 
+# Use if you are ready to integrate with a real server.
 ./scripts/setup.sh
 ```
 
-> ⚠️ **Note**: This generates new random secrets each time. If you plan to test the **automatic OAuth flow with the Python callback server** across multiple project copies, use `./scripts/setup-with-fixed-secrets.sh` instead for consistent secrets.
 
 The server will be available at:
 - **OAuth2 Server (Public)**: http://localhost:4444/health/ready
