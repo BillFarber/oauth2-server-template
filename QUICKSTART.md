@@ -27,7 +27,7 @@ Open your terminal and run these commands:
 cd ~/Documents  # or wherever you like to work
 
 # Clone this OAuth2 server template
-git clone <this-repo-url> oauth-server
+git clone https://github.com/BillFarber/oauth2-server-template.git oauth-server
 
 # Go into the project folder
 cd oauth-server

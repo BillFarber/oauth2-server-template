@@ -10,7 +10,7 @@ A production-ready OAuth2 server template using **Ory Hydra** that can be easily
 
 ```bash
 # Clone this template to your project
-git clone <this-repo> oauth-server
+git clone https://github.com/BillFarber/oauth2-server-template.git oauth-server
 cd oauth-server
 
 # Set up and start the server
