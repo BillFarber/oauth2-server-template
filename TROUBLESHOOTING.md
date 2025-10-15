@@ -120,7 +120,88 @@ curl -X DELETE http://localhost:4445/admin/clients/example-client
 
 ---
 
-### 6. Test Scripts Return Errors
+### 6. "Authorization code/token errors when copying project to new directory"
+
+**❌ Problem:** When you copy the project to a new directory and run `./scripts/setup.sh`, it generates **new random secrets**, but authorization codes and tokens from the original setup can't be validated with the new secrets.
+
+**Error symptoms:**
+- "Could not ensure that signing keys exists" 
+- "Invalid authorization code"
+- "Token validation failed"
+- Python callback server shows OAuth errors
+
+**✅ Solution 1: Use the Same Secrets (Recommended for Testing)**
+
+1. **Get secrets from your working setup:**
+   ```bash
+   # In your original working directory
+   grep SECRETS .env
+   ```
+
+2. **Copy those exact secrets to your new test directory:**
+   ```bash
+   # In your new test directory, edit .env and use the SAME secrets:
+   SECRETS_SYSTEM=your-original-system-secret-here
+   SECRETS_COOKIE=your-original-cookie-secret-here
+   ```
+
+3. **Restart containers:**
+   ```bash
+   docker-compose down -v
+   docker-compose up -d
+   ```
+
+**✅ Solution 2: Create a Setup Script with Existing Secrets**
+
+Create a helper script for consistent setups:
+
+```bash
+#!/bin/bash
+# File: scripts/setup-with-secrets.sh
+
+SYSTEM_SECRET="e71fc2a0bbae7aee00c1a65455d4340fb8e8b2da53074311db03b611ba3c846a"
+COOKIE_SECRET="337d8248c683e5108ee0113bf1cc46df174208bd3e62b1f3c05ebe71275151ca"
+
+# Copy .env.example to .env
+cp .env.example .env
+
+# Set the fixed secrets
+sed -i.bak "s/SECRETS_SYSTEM=.*/SECRETS_SYSTEM=${SYSTEM_SECRET}/" .env
+sed -i.bak "s/SECRETS_COOKIE=.*/SECRETS_COOKIE=${COOKIE_SECRET}/" .env
+rm .env.bak
+
+echo "✅ Using consistent secrets for testing"
+
+# Continue with normal setup
+docker-compose up -d
+sleep 10
+./scripts/create-client.sh
+```
+
+**✅ Solution 3: Always Reset Database When Changing Secrets**
+
+If you want different secrets in each copy:
+
+```bash
+# Stop and remove ALL data (including database)
+docker-compose down -v
+
+# Run setup (this will generate new secrets)
+./scripts/setup.sh
+
+# Test immediately in the same session
+./examples/test-oauth-flow-auto.sh
+```
+
+**🔒 Important for Production:**
+- **Never reuse secrets across environments** (dev/staging/prod)
+- **Use proper secret management** (Vault, AWS Secrets Manager, etc.)
+- **Back up your production secrets securely**
+- **Each environment should have unique secrets**
+
+---
+
+### 7. Test Scripts Return Errors
 
 **Make sure you're testing correctly:**
 
@@ -141,7 +222,7 @@ curl -X DELETE http://localhost:4445/admin/clients/example-client
 
 ---
 
-### 7. Reset Everything
+### 8. Reset Everything
 
 **To start completely fresh:**
 
