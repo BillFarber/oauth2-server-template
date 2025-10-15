@@ -18,8 +18,8 @@ cd oauth-server
 ```
 
 The server will be available at:
-- **OAuth2 Server (Public)**: http://localhost:4444
-- **OAuth2 Server (Admin)**: http://localhost:4445  
+- **OAuth2 Server (Public)**: http://localhost:4444/health/ready
+- **OAuth2 Server (Admin)**: http://localhost:4445/admin/clients  
 - **Login/Consent App**: http://localhost:3000
 
 ## 📋 Features
