@@ -1,0 +1,84 @@
+version: "3.8"
+
+services:
+  # OAuth2 Server (Ory Hydra) - Production Configuration
+  hydra:
+    image: oryd/hydra:v2.2.0
+    ports:
+      - "${HYDRA_PUBLIC_PORT:-4444}:4444"
+      - "${HYDRA_ADMIN_PORT:-4445}:4445"
+    command: serve -c /etc/config/hydra/hydra.yml all
+    volumes:
+      - type: bind
+        source: ./config
+        target: /etc/config/hydra
+    environment:
+      - DSN=${DSN}
+      - SECRETS_SYSTEM=${SECRETS_SYSTEM}
+      - SECRETS_COOKIE=${SECRETS_COOKIE}
+      - URLS_SELF_ISSUER=${URLS_SELF_ISSUER}
+      - URLS_CONSENT=${URLS_CONSENT}
+      - URLS_LOGIN=${URLS_LOGIN}
+      - URLS_LOGOUT=${URLS_LOGOUT}
+      - URLS_ERROR=${URLS_ERROR}
+      - URLS_POST_LOGOUT_REDIRECT=${URLS_POST_LOGOUT_REDIRECT}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_LEAK_SENSITIVE_VALUES=${LOG_LEAK_SENSITIVE_VALUES:-false}
+    restart: unless-stopped
+    depends_on:
+      - hydra-migrate
+      - postgres
+    networks:
+      - oauth-network
+
+  # Migration service
+  hydra-migrate:
+    image: oryd/hydra:v2.2.0
+    environment:
+      - DSN=${DSN}
+    command: migrate -c /etc/config/hydra/hydra.yml sql -e --yes
+    volumes:
+      - type: bind
+        source: ./config
+        target: /etc/config/hydra
+    restart: on-failure
+    depends_on:
+      - postgres
+    networks:
+      - oauth-network
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=hydra
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=hydra
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - oauth-network
+    restart: unless-stopped
+
+  # Login & Consent App
+  consent-app:
+    image: oryd/hydra-login-consent-node:v2.2.0
+    ports:
+      - "${CONSENT_APP_PORT:-3000}:3000"
+    environment:
+      - HYDRA_ADMIN_URL=http://hydra:4445
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+    restart: unless-stopped
+    depends_on:
+      - hydra
+    networks:
+      - oauth-network
+
+volumes:
+  postgres-data:
+
+networks:
+  oauth-network:
+    driver: bridge

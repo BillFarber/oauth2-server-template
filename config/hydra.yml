@@ -1,0 +1,44 @@
+log:
+  level: debug
+  format: json
+  leak_sensitive_values: true
+
+serve:
+  cookies:
+    same_site_mode: Lax
+
+urls:
+  self:
+    issuer: http://localhost:4444/
+  consent: http://localhost:3000/consent
+  login: http://localhost:3000/login
+  logout: http://localhost:3000/logout
+  error: http://localhost:3000/error
+  post_logout_redirect: http://localhost:3000/
+
+secrets:
+  system:
+    - this_needs_to_be_the_same_always_and_also_very_$3cuR3-._
+  cookie:
+    - this_needs_to_be_the_same_always_and_also_very_$3cuR3-._
+
+oidc:
+  subject_identifiers:
+    supported_types:
+      - pairwise
+      - public
+    pairwise:
+      salt: this_needs_to_be_the_same_always_and_also_very_$3cuR3-._
+
+oauth2:
+  expose_internal_errors: true
+
+ttl:
+  login_consent_request: 1h
+  access_token: 1h
+  refresh_token: 720h
+  id_token: 1h
+  auth_code: 10m
+
+strategies:
+  access_token: opaque
