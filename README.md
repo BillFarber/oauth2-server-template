@@ -51,7 +51,11 @@ The server will be available at:
 
 ## 🛠️ Configuration
 
+> 💡 **Quick Setup**: If you used `./scripts/setup.sh`, the basic configuration is already done for you! The script automatically creates the `.env` file and generates secure secrets. You can skip to the [Usage Examples](#-usage-examples) section.
+
 ### Development Setup
+
+#### Manual Setup (if you didn't use setup.sh)
 
 1. **Copy environment file:**
    ```bash
